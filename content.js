@@ -1,8 +1,67 @@
-console.log("[furigana] content script loaded on", location.hostname);
-document.body.style.border = "5px solid red";
-
-browser.runtime.onMessage.addListener((message) => {
-    if (message.type === "ANNOTATE_PAGE") {
-        console.log("[furigana] received ANNOTATE_PAGE");
+class FuriganaInjector {
+    constructor() {
+        this.annotated = false;
+        this.skipTags = new Set([
+            "SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA",
+            "RUBY", "RT", "RP", "NOSCRIPT", "HEAD", "TITLE"
+        ]);
+        this.hasJapanese = /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fff]/;
     }
-});
+
+    async annotate() {
+        if (this.annotated) return;
+        this.annotated = true;
+
+        const nodes = this.collectTextNodes(document.body);
+        console.log("[furigana] annotating", nodes.length, "nodes");
+
+        for (const node of nodes) {
+            const text = node.textContent;
+            if (!text.trim()) continue;
+
+            const html = await browser.runtime.sendMessage({
+                type: "ANNOTATE",
+                text
+            });
+
+            const span = document.createElement("span");
+            span.innerHTML = html;
+            node.parentNode.replaceChild(span, node);
+        }
+
+        console.log("[furigana] done");
+    }
+
+    collectTextNodes(root) {
+        const nodes = [];
+        const walker = document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: (node) => {
+                    let el = node.parentElement;
+                    while (el) {
+                        if (this.skipTags.has(el.tagName)) return NodeFilter.FILTER_REJECT;
+                        el = el.parentElement;
+                    }
+                    if (!this.hasJapanese.test(node.textContent)) return NodeFilter.FILTER_REJECT;
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            }
+        );
+        let node;
+        while ((node = walker.nextNode())) nodes.push(node);
+        return nodes;
+    }
+
+    listen() {
+        browser.runtime.onMessage.addListener((message) => {
+            if (message.type === "ANNOTATE_PAGE") {
+                this.annotate();
+            }
+        });
+    }
+}
+
+const injector = new FuriganaInjector();
+injector.listen();
