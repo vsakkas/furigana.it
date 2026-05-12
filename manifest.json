@@ -8,6 +8,7 @@
     },
     "background": {
         "scripts": [
+            "lib/kuromoji.min.js",
             "background.js"
         ],
         "persistent": true
@@ -25,5 +26,8 @@
     "permissions": [
         "contextMenus",
         "activeTab"
+    ],
+    "web_accessible_resources": [
+        "dict/*.dat.gz"
     ]
 }
