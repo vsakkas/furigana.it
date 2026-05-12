@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "furigana.it",
+    "version": "0.1.0",
+    "description": "Add furigana to any Japanese webpage.",
+    "icons": {
+        "96": "icons/icon.svg"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.mozilla.org/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
+}
