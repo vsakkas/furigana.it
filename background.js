@@ -10,7 +10,7 @@ XMLHttpRequest.prototype.open = (function (originalOpen) {
     };
 })(XMLHttpRequest.prototype.open);
 
-class FuriganaItExtension {
+class FuriganaAnnotator {
     constructor() {
         this.tokenizer = null;
         this.ready = false;
@@ -54,9 +54,9 @@ class FuriganaItExtension {
     }
 }
 
-const furigana = new FuriganaItExtension();
+const annotator = new FuriganaAnnotator();
 
-furigana.init().catch(err => {
+annotator.init().catch(err => {
     console.error("[furigana] init failed:", err);
 });
 
@@ -74,6 +74,6 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 
 browser.runtime.onMessage.addListener((msg) => {
     if (msg.type === "ANNOTATE") {
-        return Promise.resolve(furigana.annotate(msg.text));
+        return Promise.resolve(annotator.annotate(msg.text));
     }
 });
