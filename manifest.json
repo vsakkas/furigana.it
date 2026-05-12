@@ -6,6 +6,12 @@
     "icons": {
         "96": "icons/icon.svg"
     },
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    },
     "content_scripts": [
         {
             "matches": [
@@ -15,5 +21,9 @@
                 "content.js"
             ]
         }
+    ],
+    "permissions": [
+        "contextMenus",
+        "activeTab"
     ]
 }
