@@ -50,7 +50,22 @@ class FuriganaAnnotator {
             String.fromCharCode(c.charCodeAt(0) - 0x60)
         );
 
-        return `<ruby>${surface}<rt>${hira}</rt></ruby>`;
+        // Find where kanji ends and okurigana begins
+        let kanjiEnd = 0;
+        for (let i = surface.length - 1; i >= 0; i--) {
+            if (/[\u4e00-\u9fff]/.test(surface[i])) {
+                kanjiEnd = i + 1;
+                break;
+            }
+        }
+
+        const kanji = surface.slice(0, kanjiEnd);
+        const okurigana = surface.slice(kanjiEnd);
+        const kanjiReading = okurigana
+            ? hira.slice(0, hira.length - okurigana.length)
+            : hira;
+
+        return `<ruby>${kanji}<rt>${kanjiReading}</rt></ruby>${okurigana}`;
     }
 }
 
