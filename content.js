@@ -1,6 +1,6 @@
 class FuriganaInjector {
     constructor() {
-        this.annotated = false;
+        this.busy = false;
         this.skipTags = new Set([
             "SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA",
             "RUBY", "RT", "RP", "NOSCRIPT", "HEAD", "TITLE"
@@ -9,31 +9,35 @@ class FuriganaInjector {
     }
 
     async annotate() {
-        if (this.annotated) return;
-        this.annotated = true;
+        if (this.busy) return;
+        this.busy = true;
 
-        const nodes = this.collectTextNodes(document.body);
-        console.log("[furigana] annotating", nodes.length, "nodes");
+        try {
+            const nodes = this.collectTextNodes(document.body);
+            console.log("[furigana] annotating", nodes.length, "nodes");
 
-        const chunkSize = 50;
+            const chunkSize = 50;
 
-        for (let i = 0; i < nodes.length; i += chunkSize) {
-            const chunk = nodes.slice(i, i + chunkSize);
-            const texts = chunk.map(n => n.textContent);
+            for (let i = 0; i < nodes.length; i += chunkSize) {
+                const chunk = nodes.slice(i, i + chunkSize);
+                const texts = chunk.map(n => n.textContent);
 
-            const results = await browser.runtime.sendMessage({
-                type: "ANNOTATE_BATCH",
-                texts
-            });
+                const results = await browser.runtime.sendMessage({
+                    type: "ANNOTATE_BATCH",
+                    texts
+                });
 
-            chunk.forEach((node, j) => {
-                const span = document.createElement("span");
-                span.innerHTML = results[j];
-                node.parentNode.replaceChild(span, node);
-            });
+                chunk.forEach((node, j) => {
+                    const span = document.createElement("span");
+                    span.innerHTML = results[j];
+                    node.parentNode.replaceChild(span, node);
+                });
+            }
+
+            console.log("[furigana] done");
+        } finally {
+            this.busy = false;
         }
-
-        console.log("[furigana] done");
     }
 
     collectTextNodes(root) {
