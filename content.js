@@ -15,18 +15,22 @@ class FuriganaInjector {
         const nodes = this.collectTextNodes(document.body);
         console.log("[furigana] annotating", nodes.length, "nodes");
 
-        for (const node of nodes) {
-            const text = node.textContent;
-            if (!text.trim()) continue;
+        const chunkSize = 50;
 
-            const html = await browser.runtime.sendMessage({
-                type: "ANNOTATE",
-                text
+        for (let i = 0; i < nodes.length; i += chunkSize) {
+            const chunk = nodes.slice(i, i + chunkSize);
+            const texts = chunk.map(n => n.textContent);
+
+            const results = await browser.runtime.sendMessage({
+                type: "ANNOTATE_BATCH",
+                texts
             });
 
-            const span = document.createElement("span");
-            span.innerHTML = html;
-            node.parentNode.replaceChild(span, node);
+            chunk.forEach((node, j) => {
+                const span = document.createElement("span");
+                span.innerHTML = results[j];
+                node.parentNode.replaceChild(span, node);
+            });
         }
 
         console.log("[furigana] done");
