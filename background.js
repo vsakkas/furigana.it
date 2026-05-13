@@ -88,7 +88,9 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 browser.runtime.onMessage.addListener((msg) => {
-    if (msg.type === "ANNOTATE") {
-        return Promise.resolve(annotator.annotate(msg.text));
+    if (msg.type === "ANNOTATE_BATCH") {
+        return Promise.resolve(
+            msg.texts.map(text => annotator.annotate(text))
+        );
     }
 });
