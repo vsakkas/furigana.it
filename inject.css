@@ -1,0 +1,10 @@
+ruby {
+    ruby-position: over;
+}
+
+rt {
+    font-size: 0.6em;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+    user-select: none;
+}
