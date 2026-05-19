@@ -2,11 +2,27 @@
 
 Add furigana to any Japanese webpage.
 
+## Features
+
+- Annotates Japanese text on demand
+- Correct okurigana handling
+- Selectable and copyable annotated text
+- No tracking or analytics
+
+## Installation
+
+> Coming to Firefox Add-ons. For now, see `Development` section.
+
+## Usage
+
+Right-click any Japanese webpage and select **Add furigana**.
+
 ## Development
 
-1. Clone the repo
-2. Open Firefox → `about:debugging` → This Firefox → Load Temporary Add-on
-3. Select `manifest.json`
+1. Clone this repository
+2. Open Firefox and navigate to `about:debugging`
+3. Click **This Firefox** → **Load Temporary Add-on**
+4. Select `manifest.json`
 
 ## License
 
