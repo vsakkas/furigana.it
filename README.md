@@ -2,7 +2,7 @@
 
 <img src="icons/icon.svg" align="left" width="128" height="128" style="margin-right: 12px" />
 
-[![GPLv3 License](https://img.shields.io/badge/license-GPLv3-edece7)](LICENSE)
+[![GPLv3 License](https://img.shields.io/badge/License-GPLv3-edece7)](LICENSE)
 [![Firefox Add-on](https://img.shields.io/badge/Firefox-Unpublished-edece7?logo=firefox-browser&logoColor=edece7)](#)
 
 Add furigana to any Japanese webpage.
@@ -25,6 +25,10 @@ A browser extension that annotates kanji with readings on demand. Right-click on
 
 Right-click any Japanese webpage and select **Add furigana**.
 
+## Privacy
+
+This extension does not collect, store, or transmit any data — see the [PRIVACY.md](PRIVACY.md) file for details.
+
 ## Development
 
 1. Clone this repository
@@ -34,4 +38,4 @@ Right-click any Japanese webpage and select **Add furigana**.
 
 ## License
 
-This project is licensed under the GPLv3 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPLv3 License — see the [LICENSE](LICENSE) file for details.
