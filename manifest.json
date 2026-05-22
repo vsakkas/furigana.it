@@ -4,7 +4,11 @@
     "version": "0.1.0",
     "description": "Add furigana to any Japanese webpage.",
     "icons": {
-        "96": "icons/icon.svg"
+        "16": "icons/icon.svg",
+        "32": "icons/icon.svg",
+        "48": "icons/icon.svg",
+        "96": "icons/icon.svg",
+        "128": "icons/icon.svg"
     },
     "background": {
         "scripts": [
