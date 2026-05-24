@@ -1,5 +1,5 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "furigana.it",
     "version": "0.1.0",
     "description": "Add furigana to any Japanese webpage.",
@@ -14,7 +14,8 @@
         "scripts": [
             "lib/kuromoji.min.js",
             "background.js"
-        ]
+        ],
+        "persistent": true
     },
     "content_scripts": [
         {
@@ -34,14 +35,7 @@
         "activeTab"
     ],
     "web_accessible_resources": [
-        {
-            "resources": [
-                "dict/*.dat.gz"
-            ],
-            "matches": [
-                "<all_urls>"
-            ]
-        }
+        "dict/*.dat.gz"
     ],
     "browser_specific_settings": {
         "gecko": {
