@@ -3,7 +3,7 @@
 <img src="icons/icon.svg" align="left" width="128" height="128" style="margin-right: 12px" />
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPLv3-edece7)](LICENSE)
-[![Firefox Add-on](https://img.shields.io/badge/Firefox-Unpublished-edece7?logo=firefox-browser&logoColor=edece7)](#)
+[![Firefox Add-on](https://img.shields.io/badge/Firefox-Unpublished-edece7?logo=firefox-browser&logoColor=ffffff)](#)
 
 Add furigana to any Japanese webpage.
 
