@@ -10,21 +10,17 @@ XMLHttpRequest.prototype.open = (function (originalOpen) {
     };
 })(XMLHttpRequest.prototype.open);
 
+const KANJI_RE = /[\u4e00-\u9fff]/;
+
 class FuriganaAnnotator {
-    constructor() {
-        this.tokenizer = null;
-        this.ready = false;
-    }
+    tokenizer = null;
 
     async init() {
         return new Promise((resolve, reject) => {
             kuromoji.builder({ dicPath: browser.runtime.getURL("dict/") })
                 .build((err, tokenizer) => {
                     if (err) return reject(err);
-
                     this.tokenizer = tokenizer;
-                    this.ready = true;
-
                     console.log("[furigana] ready");
                     resolve();
                 });
@@ -32,10 +28,10 @@ class FuriganaAnnotator {
     }
 
     annotate(text) {
-        if (!this.ready) return text;
-
-        return this.tokenizer.tokenize(text)
-            .map(t => this.toRuby(t))
+        if (!this.tokenizer) return text;
+        return this.tokenizer
+            .tokenize(text)
+            .map(token => this.toRuby(token))
             .join("");
     }
 
@@ -44,28 +40,73 @@ class FuriganaAnnotator {
         const reading = token.reading;
 
         if (!reading || reading === surface) return surface;
-        if (!/[\u4e00-\u9fff]/.test(surface)) return surface;
+        if (!KANJI_RE.test(surface)) return surface;
 
-        const hira = reading.replace(/[\u30a1-\u30f6]/g, c =>
-            String.fromCharCode(c.charCodeAt(0) - 0x60)
-        );
+        return this.alignReadingToSurface(surface, this.toHiragana(reading));
+    }
 
-        // Find where kanji ends and okurigana begins
-        let kanjiEnd = 0;
-        for (let i = surface.length - 1; i >= 0; i--) {
-            if (/[\u4e00-\u9fff]/.test(surface[i])) {
-                kanjiEnd = i + 1;
-                break;
+    // Build a regex from the surface where consecutive kanji
+    // groups become (.+) and kana become literals, then match
+    // against the reading to extract per-kanji-group readings.
+    alignReadingToSurface(surface, reading) {
+        let pattern = "^";
+        let inKanji = false;
+
+        for (const char of surface) {
+            if (KANJI_RE.test(char)) {
+                if (!inKanji) {
+                    pattern += "(.+)";
+                    inKanji = true;
+                }
+            } else {
+                inKanji = false;
+                pattern += this.toHiragana(char).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            }
+        }
+        pattern += "$";
+
+        const match = new RegExp(pattern).exec(reading);
+        if (!match) {
+            // Fallback — wrap entire surface
+            return `<ruby>${surface}<rt>${reading}</rt></ruby>`;
+        }
+
+        let result = "";
+        let groupIndex = 1;
+        inKanji = false;
+
+        for (const char of surface) {
+            if (KANJI_RE.test(char)) {
+                if (!inKanji) {
+                    result += `<ruby>${char}`;
+                    inKanji = true;
+                } else {
+                    result += char;
+                }
+            } else {
+                if (inKanji) {
+                    result += `<rt>${match[groupIndex++]}</rt></ruby>`;
+                    inKanji = false;
+                }
+                result += char;
             }
         }
 
-        const kanji = surface.slice(0, kanjiEnd);
-        const okurigana = surface.slice(kanjiEnd);
-        const kanjiReading = okurigana
-            ? hira.slice(0, hira.length - okurigana.length)
-            : hira;
+        if (inKanji) {
+            result += `<rt>${match[groupIndex]}</rt></ruby>`;
+        }
 
-        return `<ruby>${kanji}<rt>${kanjiReading}</rt></ruby>${okurigana}`;
+        return result;
+    }
+
+    toHiragana(text) {
+        return text.replace(/[\u30a1-\u30f6]/g, char =>
+            String.fromCharCode(char.charCodeAt(0) - 0x60)
+        );
+    }
+
+    isKana(char) {
+        return /[\u3040-\u309f\u30a0-\u30ff]/.test(char);
     }
 }
 
@@ -87,7 +128,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
-browser.runtime.onMessage.addListener((msg) => {
+browser.runtime.onMessage.addListener(msg => {
     if (msg.type === "ANNOTATE_BATCH") {
         return Promise.resolve(
             msg.texts.map(text => annotator.annotate(text))
