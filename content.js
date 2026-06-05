@@ -16,7 +16,8 @@ class FuriganaInjector {
             const nodes = this.collectTextNodes(document.body);
             console.log("[furigana] annotating", nodes.length, "nodes");
 
-            const chunkSize = 50;
+            const chunkSize = 100;
+            console.time("[furigana] total");
 
             for (let i = 0; i < nodes.length; i += chunkSize) {
                 const chunk = nodes.slice(i, i + chunkSize);
@@ -27,13 +28,17 @@ class FuriganaInjector {
                     texts
                 });
 
-                chunk.forEach((node, j) => {
+                const spans = results.map(html => {
                     const span = document.createElement("span");
-                    span.innerHTML = results[j];
-                    node.parentNode.replaceChild(span, node);
+                    span.innerHTML = html;
+                    return span;
+                });
+                chunk.forEach((node, j) => {
+                    node.parentNode.replaceChild(spans[j], node);
                 });
             }
 
+            console.timeEnd("[furigana] total");
             console.log("[furigana] done");
         } finally {
             this.busy = false;

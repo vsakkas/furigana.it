@@ -60,7 +60,7 @@ class FuriganaAnnotator {
                 }
             } else {
                 inKanji = false;
-                pattern += this.toHiragana(char).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                pattern += char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             }
         }
         pattern += "$";
@@ -103,10 +103,6 @@ class FuriganaAnnotator {
         return text.replace(/[\u30a1-\u30f6]/g, char =>
             String.fromCharCode(char.charCodeAt(0) - 0x60)
         );
-    }
-
-    isKana(char) {
-        return /[\u3040-\u309f\u30a0-\u30ff]/.test(char);
     }
 }
 
