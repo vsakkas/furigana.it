@@ -13,6 +13,9 @@ class FuriganaInjector {
         this.busy = true;
 
         try {
+            // Wait a tick to ensure page has fully rendered
+            await new Promise(requestAnimationFrame);
+
             const nodes = this.collectTextNodes(document.body);
             console.log("[furigana] annotating", nodes.length, "nodes");
             console.time("[furigana] total");
