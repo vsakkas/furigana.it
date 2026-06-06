@@ -29,10 +29,11 @@ class FuriganaAnnotator {
 
     annotate(text) {
         if (!this.tokenizer) return text;
-        return this.tokenizer
+        const result = this.tokenizer
             .tokenize(text)
             .map(token => this.toRuby(token))
             .join("");
+        return result === text ? null : result;
     }
 
     toRuby(token) {
