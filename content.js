@@ -56,13 +56,12 @@ class FuriganaInjector {
         const nodes = [];
         const walker = document.createTreeWalker(
             root,
-            NodeFilter.SHOW_TEXT,
+            NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
             {
                 acceptNode: (node) => {
-                    let el = node.parentElement;
-                    while (el) {
-                        if (this.skipTags.has(el.tagName)) return NodeFilter.FILTER_REJECT;
-                        el = el.parentElement;
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        if (this.skipTags.has(node.tagName)) return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_SKIP;
                     }
                     if (!this.hasJapanese.test(node.textContent)) return NodeFilter.FILTER_REJECT;
                     return NodeFilter.FILTER_ACCEPT;
