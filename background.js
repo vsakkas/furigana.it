@@ -125,6 +125,10 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
+browser.browserAction.onClicked.addListener((tab) => {
+    browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_PAGE" });
+});
+
 browser.runtime.onMessage.addListener(msg => {
     if (msg.type === "ANNOTATE_BATCH") {
         return Promise.resolve(

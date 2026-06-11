@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "furigana.it",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Add furigana to any Japanese webpage.",
     "icons": {
         "16": "icons/icon.svg",
@@ -16,6 +16,10 @@
             "background.js"
         ],
         "persistent": true
+    },
+    "browser_action": {
+        "default_icon": "icons/icon.svg",
+        "default_title": "Add furigana"
     },
     "content_scripts": [
         {
