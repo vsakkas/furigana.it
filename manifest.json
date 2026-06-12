@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "furigana.it",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "Add furigana to any Japanese webpage.",
     "icons": {
         "16": "icons/icon.svg",
@@ -53,14 +53,7 @@
             }
         },
         "gecko_android": {
-            "id": "furigana@furigana.it",
-            "strict_min_version": "150.0",
-            "data_collection_permissions": {
-                "required": [
-                    "none"
-                ],
-                "optional": []
-            }
+            "strict_min_version": "150.0"
         }
     }
 }

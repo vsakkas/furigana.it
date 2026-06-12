@@ -23,7 +23,9 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/addon/furigana-it/).
 
 ## Usage
 
-Right-click any Japanese webpage and select **Add furigana**.
+On Desktop, right-click any Japanese webpage and select **Add furigana**.
+
+On Android, open the menu (⋮), go to **Extensions**, then tap **Add furigana**.
 
 ## Privacy
 
