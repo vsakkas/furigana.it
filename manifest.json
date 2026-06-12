@@ -51,6 +51,16 @@
                 ],
                 "optional": []
             }
+        },
+        "gecko_android": {
+            "id": "furigana@furigana.it",
+            "strict_min_version": "150.0",
+            "data_collection_permissions": {
+                "required": [
+                    "none"
+                ],
+                "optional": []
+            }
         }
     }
 }
