@@ -113,17 +113,19 @@ annotator.init().catch(err => {
     console.error("[furigana] init failed:", err);
 });
 
-browser.contextMenus.create({
-    id: "add-furigana",
-    title: "Add furigana",
-    contexts: ["page"]
-});
+if (browser.contextMenus && browser.contextMenus.create) {
+    browser.contextMenus.create({
+        id: "add-furigana",
+        title: "Add furigana",
+        contexts: ["page"]
+    });
 
-browser.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "add-furigana") {
-        browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_PAGE" });
-    }
-});
+    browser.contextMenus.onClicked.addListener((info, tab) => {
+        if (info.menuItemId === "add-furigana") {
+            browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_PAGE" });
+        }
+    });
+}
 
 browser.browserAction.onClicked.addListener((tab) => {
     browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_PAGE" });
