@@ -20,31 +20,8 @@ class FuriganaInjector {
             console.log("[furigana] annotating", nodes.length, "nodes");
             console.time("[furigana] total");
 
-            const range = document.createRange();
+            await this.annotateNodes(nodes);
 
-            // Split nodes into batches
-            const chunkSize = 100;
-            const chunks = [];
-            for (let i = 0; i < nodes.length; i += chunkSize) {
-                chunks.push(nodes.slice(i, i + chunkSize));
-            }
-
-            // Send all batches to background for annotation
-            const promises = chunks.map(chunk =>
-                browser.runtime.sendMessage({
-                    type: "ANNOTATE_BATCH",
-                    texts: chunk.map(n => n.textContent)
-                })
-            );
-
-            // Apply results as they come back, replacing original text with annotated HTML
-            for (let i = 0; i < promises.length; i++) {
-                const results = await promises[i];
-                chunks[i].forEach((node, j) => {
-                    if (results[j] === null) return;
-                    node.replaceWith(range.createContextualFragment(results[j]));
-                });
-            }
             console.timeEnd("[furigana] total");
             console.log("[furigana] done");
         } finally {
@@ -52,10 +29,64 @@ class FuriganaInjector {
         }
     }
 
-    collectTextNodes(root) {
+    async annotateSelection() {
+        if (this.busy) return;
+        this.busy = true;
+
+        try {
+            await new Promise(requestAnimationFrame);
+
+            const selection = window.getSelection();
+            if (!selection || selection.isCollapsed || selection.rangeCount === 0) return;
+
+            const range = selection.getRangeAt(0);
+            const nodes = this.collectTextNodes(range.commonAncestorContainer, range);
+
+            console.log("[furigana] annotating", nodes.length, "selected nodes");
+            console.time("[furigana] selection total");
+
+            await this.annotateNodes(nodes);
+
+            console.timeEnd("[furigana] selection total");
+            console.log("[furigana] selection done");
+        } finally {
+            this.busy = false;
+        }
+    }
+
+    async annotateNodes(nodes) {
+        // Split nodes into batches
+        const chunkSize = 100;
+        const chunks = [];
+        for (let i = 0; i < nodes.length; i += chunkSize) {
+            chunks.push(nodes.slice(i, i + chunkSize));
+        }
+
+        // Send all batches to background for annotation
+        const promises = chunks.map(chunk =>
+            browser.runtime.sendMessage({
+                type: "ANNOTATE_BATCH",
+                texts: chunk.map(n => n.textContent)
+            })
+        );
+
+        // Apply results as they come back, replacing original text with annotated HTML
+        const range = document.createRange();
+        for (let i = 0; i < promises.length; i++) {
+            const results = await promises[i];
+            chunks[i].forEach((node, j) => {
+                if (results[j] === null) return;
+                node.replaceWith(range.createContextualFragment(results[j]));
+            });
+        }
+    }
+
+    collectTextNodes(root, range = null) {
+        const treeRoot = root.nodeType === Node.TEXT_NODE ? root.parentNode : root;
+
         const nodes = [];
         const walker = document.createTreeWalker(
-            root,
+            treeRoot,
             NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
             {
                 acceptNode: (node) => {
@@ -64,6 +95,7 @@ class FuriganaInjector {
                         return NodeFilter.FILTER_SKIP;
                     }
                     if (!this.hasJapanese.test(node.textContent)) return NodeFilter.FILTER_REJECT;
+                    if (range && !range.intersectsNode(node)) return NodeFilter.FILTER_REJECT;
                     return NodeFilter.FILTER_ACCEPT;
                 }
             }
@@ -77,6 +109,9 @@ class FuriganaInjector {
         browser.runtime.onMessage.addListener((message) => {
             if (message.type === "ANNOTATE_PAGE") {
                 this.annotate();
+            }
+            if (message.type === "ANNOTATE_SELECTION") {
+                this.annotateSelection();
             }
         });
     }

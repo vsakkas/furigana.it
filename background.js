@@ -120,9 +120,17 @@ if (browser.contextMenus && browser.contextMenus.create) {
         contexts: ["page"]
     });
 
+    browser.contextMenus.create({
+        id: "add-furigana-selection",
+        title: "Add furigana to selection",
+        contexts: ["selection"]
+    });
+
     browser.contextMenus.onClicked.addListener((info, tab) => {
         if (info.menuItemId === "add-furigana") {
             browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_PAGE" });
+        } else if (info.menuItemId === "add-furigana-selection") {
+            browser.tabs.sendMessage(tab.id, { type: "ANNOTATE_SELECTION" });
         }
     });
 }
