@@ -7,11 +7,11 @@
 
 Add furigana to any Japanese webpage.
 
-A browser extension that annotates kanji with readings on demand. Right-click on any page and select **Add furigana**. Everything runs locally in your browser.
+A browser extension that annotates kanji with readings on demand. Right-click on any page or text and select **Add furigana**. Everything runs locally in your browser.
 
 ## Features
 
-- On-demand annotation of Japanese webpages
+- On-demand annotation of Japanese webpages or selected text
 - Correct morphological parsing using [kuromoji](https://www.npmjs.com/package/kuromoji)
 - Proper okurigana handling — 食べる → 食(た)べる
 - Selectable and copyable annotated text
@@ -23,7 +23,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/addon/furigana-it/).
 
 ## Usage
 
-On Desktop, right-click any Japanese webpage and select **Add furigana**.
+On Desktop, right-click and select **Add furigana** to annotate the entire page. To annotate a specific passage, select the text first, then right-click and choose **Add furigana to selection**.
 
 On Android, open the menu (⋮), go to **Extensions**, then tap **Add furigana**.
 
