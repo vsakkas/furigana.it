@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "furigana.it",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "description": "Add furigana to any Japanese webpage.",
     "icons": {
         "16": "icons/icon.svg",
