@@ -5,7 +5,7 @@ class FuriganaInjector {
             "SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA",
             "RUBY", "RT", "RP", "NOSCRIPT", "HEAD", "TITLE"
         ]);
-        this.hasJapanese = /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9fff]/;
+        this.hasKanji = /[\u4e00-\u9fff]/;
     }
 
     async annotate() {
@@ -94,7 +94,7 @@ class FuriganaInjector {
                         if (this.skipTags.has(node.tagName)) return NodeFilter.FILTER_REJECT;
                         return NodeFilter.FILTER_SKIP;
                     }
-                    if (!this.hasJapanese.test(node.textContent)) return NodeFilter.FILTER_REJECT;
+                    if (!this.hasKanji.test(node.textContent)) return NodeFilter.FILTER_REJECT;
                     if (range && !range.intersectsNode(node)) return NodeFilter.FILTER_REJECT;
                     return NodeFilter.FILTER_ACCEPT;
                 }
